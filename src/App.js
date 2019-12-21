@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import './App.css'
+import SignIn from './components/SignIn/SignIn'
+import Register from './components/Register/Register'
 import Navigation from './components/Navigation/Navigation'
 import Logo from './components/Logo/Logo'
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
@@ -15,7 +17,9 @@ class App extends Component {
     this.state = {
       input: '',
       imgSrc: '',
-      box: {}
+      box: {},
+      route: 'signin',
+      isSignedIn: false
     }
     this.imgRef = React.createRef()
   }
@@ -42,7 +46,13 @@ class App extends Component {
       input: e.target.value
     })
   }
-
+  onRouteChange = route => {
+    let isSignedIn = false
+    if (route === 'home') {
+      isSignedIn = true
+    }
+    this.setState({ route, isSignedIn })
+  }
   onButtonSubmit = () => {
     this.setState({ imgSrc: this.state.input })
     app.models
@@ -54,20 +64,28 @@ class App extends Component {
       )
   }
   render () {
+    const { isSignedIn, imgSrc, route, box } = this.state
     return (
       <div className='App'>
-        <Navigation />
-        <Logo />
-        <ImageLinkForm
-          onInputChange={this.onInputChange}
-          onButtonSubmit={this.onButtonSubmit}
+        <Navigation
+          isSignedIn={isSignedIn}
+          onRouteChange={this.onRouteChange}
         />
-        <Rank />
-        <FaceRecognition
-          box={this.state.box}
-          imgRef={this.imgRef}
-          imgSrc={this.state.imgSrc}
-        />
+        {route === 'home' ? (
+          <div>
+            <Logo />
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onButtonSubmit={this.onButtonSubmit}
+            />
+            <Rank />
+            <FaceRecognition box={box} imgRef={this.imgRef} imgSrc={imgSrc} />
+          </div>
+        ) : this.state.route === 'register' ? (
+          <Register onRouteChange={this.onRouteChange} />
+        ) : (
+          <SignIn onRouteChange={this.onRouteChange} />
+        )}
       </div>
     )
   }
