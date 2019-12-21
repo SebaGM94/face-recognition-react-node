@@ -3,28 +3,51 @@ import './App.css'
 import Navigation from './components/Navigation/Navigation'
 import Logo from './components/Logo/Logo'
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
+import FaceRecognition from './components/FaceRecognition/FaceRecognition'
 import Rank from './components/Rank/Rank'
+import Clarifai from 'clarifai'
+
+const app = new Clarifai.App({ apiKey: '4f1b059f9c1e42ea8b8356acf6900f59' })
 
 class App extends Component {
   constructor () {
     super()
     this.state = {
-      input: ''
+      input: '',
+      imgSrc: '',
+      box: {}
     }
   }
 
-  onInputChange = e => {
-    console.log('e is', e.target.value)
+  calculateLocation = data => {
+    console.log(data.outputs[0].data.regions[0].region_info.bounding_box)
   }
 
+  onInputChange = e => {
+    this.setState({
+      input: e.target.value
+    })
+  }
+
+  onButtonSubmit = () => {
+    this.setState({ imgSrc: this.state.input })
+    app.models
+      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+      .then(response =>
+        this.calculateLocation(response).catch(err => console.log(err))
+      )
+  }
   render () {
     return (
       <div className='App'>
         <Navigation />
         <Logo />
-        <ImageLinkForm onInputChange={this.onInputChange} />
+        <ImageLinkForm
+          onInputChange={this.onInputChange}
+          onButtonSubmit={this.onButtonSubmit}
+        />
         <Rank />
-        {/* <FaceRecognition /> */}
+        <FaceRecognition imgSrc={this.state.imgSrc} />
       </div>
     )
   }
