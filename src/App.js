@@ -47,6 +47,9 @@ class App extends Component {
       data.outputs[0].data.regions[0].region_info.bounding_box
     const width = this.imgRef.current.width
     const height = this.imgRef.current.height
+    // const image = document.getElementById('inputimage')
+    // const width = Number(image.width)
+    // const height = Number(image.height)
     return {
       leftCol: clarifaiFace.left_col * width,
       topRow: clarifaiFace.top_row * height,
@@ -64,12 +67,12 @@ class App extends Component {
   }
 
   onButtonSubmit = () => {
-    this.setState({ imageUrl: this.state.input })
+    this.setState({ imgSrc: this.state.input })
     app.models
       .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
       .then(response => {
         if (response) {
-          fetch('http://localhost:3000/image', {
+          fetch('https://face-recognition-js-api.herokuapp.com/image', {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
