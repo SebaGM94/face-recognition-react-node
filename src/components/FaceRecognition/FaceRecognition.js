@@ -5,6 +5,7 @@ const FaceRecognition = ({
   imgRef,
   box = { top: 0, bottom: 0, left: 0, right: 0 }
 }) => {
+  console.log('imgSrc', imgSrc)
   return (
     <div className='center'>
       <div className='absolute mt2'>
